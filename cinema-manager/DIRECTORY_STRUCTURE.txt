@@ -1,0 +1,58 @@
+Cinema Management System - Clean Directory Structure
+=====================================================
+cinema-manager/
+├── backend/
+│   ├── .env (your config - not in Git)
+│   ├── .env.example
+│   ├── .gitignore
+│   ├── .mvn/ (Maven wrapper)
+│   ├── README.md
+│   ├── mvnw
+│   ├── mvnw.cmd
+│   ├── pom.xml
+│   └── src/
+│       └── main/
+│           ├── java/
+│           │   └── com/example/cinema/managing/system/
+│           │       ├── config/
+│           │       ├── controller/
+│           │       ├── dto/
+│           │       ├── model/
+│           │       ├── repository/
+│           │       ├── security/
+│           │       └── service/
+│           └── resources/
+│               └── application.properties
+│
+├── frontend/
+│   ├── .gitignore
+│   ├── README.md
+│   ├── node_modules/ (npm dependencies - not in Git)
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── public/
+│   │   ├── index.html
+│   │   └── movie-collage-bg.jpg
+│   └── src/
+│       ├── components/
+│       ├── context/
+│       ├── pages/
+│       ├── services/
+│       ├── App.css
+│       ├── App.js
+│       ├── index.css
+│       └── index.js
+│
+├── .env.example
+├── .gitignore
+├── CLEANUP_SUMMARY.txt
+├── DEPLOYMENT_GUIDE.md
+├── DIRECTORY_STRUCTURE.txt (this file)
+├── QUICK_DEPLOY.md
+├── README.md
+└── vercel.json
+Total: 9 root-level files + 2 directories (backend, frontend)
+DEPLOYMENT TARGETS:
+• Backend  → Heroku / Railway / Render
+• Frontend → Vercel
+STATUS: ✅ Clean, Organized, Deployment-Ready!
