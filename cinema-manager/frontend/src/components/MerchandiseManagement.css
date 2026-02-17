@@ -1,0 +1,317 @@
+.merchandise-management {
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.merchandise-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.merchandise-header h2 {
+  color: #e50914;
+  font-size: 2rem;
+}
+
+.btn-add-merchandise {
+  background: #e50914;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: background 0.3s;
+}
+
+.btn-add-merchandise:hover {
+  background: #b20710;
+}
+
+.merchandise-form {
+  background: #1a1a1a;
+  padding: 30px;
+  border-radius: 10px;
+  margin-bottom: 40px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  color: #ffffff;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 12px;
+  background: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 5px;
+  color: #ffffff;
+  font-size: 1rem;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #e50914;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 0;
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: auto;
+  cursor: pointer;
+}
+
+.form-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.btn-submit,
+.btn-cancel {
+  padding: 12px 30px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.btn-submit {
+  background: #e50914;
+  color: white;
+}
+
+.btn-submit:hover {
+  background: #b20710;
+}
+
+.btn-cancel {
+  background: #444;
+  color: white;
+}
+
+.btn-cancel:hover {
+  background: #555;
+}
+
+.merchandise-list h3 {
+  color: #ffffff;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+}
+
+.merchandise-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 25px;
+}
+
+.merchandise-card {
+  background: #1a1a1a;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s;
+  position: relative;
+}
+
+.merchandise-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.5);
+}
+
+.merchandise-card.inactive {
+  opacity: 0.6;
+}
+
+.merchandise-image {
+  width: 100%;
+  height: 250px;
+  overflow: hidden;
+  position: relative;
+}
+
+.merchandise-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.inactive-badge,
+.out-of-stock-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #e50914;
+  color: white;
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.out-of-stock-badge {
+  background: #ff6b6b;
+  top: 45px;
+}
+
+.merchandise-info {
+  padding: 20px;
+}
+
+.merchandise-info h4 {
+  color: #ffffff;
+  font-size: 1.25rem;
+  margin-bottom: 8px;
+}
+
+.character-name,
+.related-movie {
+  color: #999;
+  font-size: 0.9rem;
+  margin: 5px 0;
+}
+
+.character-name {
+  color: #e50914;
+  font-weight: 600;
+}
+
+.category {
+  display: inline-block;
+  background: #333;
+  color: #fff;
+  padding: 5px 12px;
+  border-radius: 15px;
+  font-size: 0.85rem;
+  margin: 10px 0;
+}
+
+.description {
+  color: #ccc;
+  font-size: 0.95rem;
+  margin: 10px 0;
+  line-height: 1.5;
+  max-height: 60px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.merchandise-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 15px 0;
+  padding: 10px;
+  background: #2a2a2a;
+  border-radius: 5px;
+}
+
+.price {
+  color: #4CAF50;
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.stock,
+.sales {
+  color: #999;
+  font-size: 0.9rem;
+}
+
+.merchandise-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-edit,
+.btn-stock,
+.btn-delete {
+  flex: 1;
+  min-width: 80px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.btn-edit {
+  background: #2196F3;
+  color: white;
+}
+
+.btn-edit:hover {
+  background: #1976D2;
+}
+
+.btn-stock {
+  background: #FF9800;
+  color: white;
+}
+
+.btn-stock:hover {
+  background: #F57C00;
+}
+
+.btn-delete {
+  background: #f44336;
+  color: white;
+}
+
+.btn-delete:hover {
+  background: #d32f2f;
+}
+
+@media (max-width: 768px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .merchandise-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .merchandise-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+}
