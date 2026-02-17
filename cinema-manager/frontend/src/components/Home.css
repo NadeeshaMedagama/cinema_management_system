@@ -1,0 +1,44 @@
+.home-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+}
+
+.hero-section {
+  text-align: center;
+  padding: 80px 20px 40px;
+  background: linear-gradient(180deg, rgba(255, 0, 110, 0.1) 0%, transparent 100%);
+}
+
+.hero-section h1 {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  background: linear-gradient(90deg, #ff006e 0%, #8b00ff 50%, #00f5ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 5s ease infinite;
+}
+
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.hero-section p {
+  font-size: 1.5rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+@media (max-width: 768px) {
+  .hero-section h1 {
+    font-size: 2.5rem;
+  }
+
+  .hero-section p {
+    font-size: 1.2rem;
+  }
+}
