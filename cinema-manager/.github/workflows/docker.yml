@@ -1,0 +1,204 @@
+name: Docker Build and Push
+
+on:
+  push:
+    branches: [ master, develop ]
+  pull_request:
+    branches: [ master ]
+  release:
+    types: [ published ]
+  workflow_dispatch:
+
+env:
+  DOCKER_BUILDKIT: 1
+  COMPOSE_DOCKER_CLI_BUILD: 1
+
+jobs:
+  build-and-push-backend:
+    name: Build and Push Backend Image
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Extract metadata (tags, labels)
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ secrets.DOCKER_USERNAME }}/cinema-backend
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=sha,prefix={{branch}}-
+          type=raw,value=latest,enable={{is_default_branch}}
+
+    - name: Build and push Backend Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./backend
+        file: ./backend/Dockerfile
+        push: ${{ github.event_name != 'pull_request' }}
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        platforms: linux/amd64,linux/arm64
+
+    - name: Image digest
+      run: echo "Backend image digest - ${{ steps.docker_build.outputs.digest }}"
+
+  build-and-push-frontend:
+    name: Build and Push Frontend Image
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Extract metadata (tags, labels)
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ secrets.DOCKER_USERNAME }}/cinema-frontend
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=sha,prefix={{branch}}-
+          type=raw,value=latest,enable={{is_default_branch}}
+
+    - name: Build and push Frontend Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./frontend
+        file: ./frontend/Dockerfile
+        push: ${{ github.event_name != 'pull_request' }}
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        build-args: |
+          REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL }}
+          REACT_APP_STRIPE_PUBLIC_KEY=${{ secrets.REACT_APP_STRIPE_PUBLIC_KEY }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        platforms: linux/amd64,linux/arm64
+
+    - name: Image digest
+      run: echo "Frontend image digest - ${{ steps.docker_build.outputs.digest }}"
+
+  scan-backend-image:
+    name: Scan Backend Image for Vulnerabilities
+    needs: build-and-push-backend
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+
+    steps:
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: ${{ secrets.DOCKER_USERNAME }}/cinema-backend:latest
+        format: 'sarif'
+        output: 'trivy-results-backend.sarif'
+
+    - name: Upload Trivy results to GitHub Security
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: 'trivy-results-backend.sarif'
+        category: 'backend-image'
+
+  scan-frontend-image:
+    name: Scan Frontend Image for Vulnerabilities
+    needs: build-and-push-frontend
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+
+    steps:
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: ${{ secrets.DOCKER_USERNAME }}/cinema-frontend:latest
+        format: 'sarif'
+        output: 'trivy-results-frontend.sarif'
+
+    - name: Upload Trivy results to GitHub Security
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: 'trivy-results-frontend.sarif'
+        category: 'frontend-image'
+
+  create-manifest:
+    name: Create Multi-Arch Manifest
+    needs: [build-and-push-backend, build-and-push-frontend]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Create and push manifest for backend
+      run: |
+        docker manifest create ${{ secrets.DOCKER_USERNAME }}/cinema-backend:latest \
+          --amend ${{ secrets.DOCKER_USERNAME }}/cinema-backend:latest
+        docker manifest push ${{ secrets.DOCKER_USERNAME }}/cinema-backend:latest
+
+    - name: Create and push manifest for frontend
+      run: |
+        docker manifest create ${{ secrets.DOCKER_USERNAME }}/cinema-frontend:latest \
+          --amend ${{ secrets.DOCKER_USERNAME }}/cinema-frontend:latest
+        docker manifest push ${{ secrets.DOCKER_USERNAME }}/cinema-frontend:latest
+
+  notify:
+    name: Send Notifications
+    needs: [build-and-push-backend, build-and-push-frontend]
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+    - name: Send Slack notification
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        text: |
+          Docker Images Build Status: ${{ job.status }}
+          Backend: ${{ secrets.DOCKER_USERNAME }}/cinema-backend
+          Frontend: ${{ secrets.DOCKER_USERNAME }}/cinema-frontend
+        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+      if: always()
+      continue-on-error: true
+
+    - name: Create GitHub Release Comment
+      uses: actions/github-script@v7
+      if: github.event_name == 'release'
+      with:
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `✅ Docker images published:\n- Backend: \`${{ secrets.DOCKER_USERNAME }}/cinema-backend:latest\`\n- Frontend: \`${{ secrets.DOCKER_USERNAME }}/cinema-frontend:latest\``
+          })
