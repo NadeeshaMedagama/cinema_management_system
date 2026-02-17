@@ -1,0 +1,224 @@
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import movieService from '../services/movieService';
+import merchandiseService from '../services/merchandiseService';
+import foodService from '../services/foodService';
+import systemConfigService from '../services/systemConfigService';
+import userService from '../services/userService';
+import contactService from '../services/contactService';
+import ShowtimeManagement from '../components/ShowtimeManagement';
+import './AdminDashboard.css';
+
+function AdminDashboard() {
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
+  const [activeTab, setActiveTab] = useState('overview');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [movies, setMovies] = useState([]);
+  const [merchandise, setMerchandise] = useState([]);
+  const [foods, setFoods] = useState([]);
+  const [admins, setAdmins] = useState([]);
+  const [contacts, setContacts] = useState([]);
+  const [selectedContact, setSelectedContact] = useState(null);
+  const [foodCategories, setFoodCategories] = useState(['POPCORN', 'DRINKS', 'SNACKS', 'COMBOS']);
+  const [merchandiseCategories, setMerchandiseCategories] = useState(['POSTERS', 'TOYS', 'CLOTHING']);
+
+  // 1. Authentication Guard (from main)
+  useEffect(() => {
+    if (!user) {
+      navigate('/');
+      return;
+    }
+    if (user.role !== 'ADMIN') {
+      alert(`Access Denied! You need ADMIN role.`);
+      navigate('/');
+      return;
+    }
+  }, [user, navigate]);
+
+  // Form States
+  const [showAddMovie, setShowAddMovie] = useState(false);
+  const [newMovie, setNewMovie] = useState({
+    title: '', description: '', genre: '', duration: '', rating: '',
+    releaseDate: '', posterUrl: '', trailerUrl: '', nowShowing: true, comingSoon: false
+  });
+
+  const [showAddMerchandise, setShowAddMerchandise] = useState(false);
+  const [newMerchandise, setNewMerchandise] = useState({
+    name: '', description: '', price: '', category: 'TOYS', imageUrl: '',
+    stock: '', bundle: false, bundleMovieId: '', relatedMovie: '', characterName: '', active: true
+  });
+
+  const [showAddFood, setShowAddFood] = useState(false);
+  const [newFood, setNewFood] = useState({
+    name: '', description: '', price: '', category: 'POPCORN', imageUrl: '',
+    size: 'MEDIUM', combo: false, seatDelivery: true, active: true
+  });
+
+  const [showAddAdmin, setShowAddAdmin] = useState(false);
+  const [newAdmin, setNewAdmin] = useState({ username: '', email: '', password: '', phone: '' });
+  const [adminMessage, setAdminMessage] = useState({ type: '', text: '' });
+
+  // 2. Data Loading Logic (Merged)
+  useEffect(() => {
+    loadMovies();
+    loadMerchandise();
+    loadFoods();
+    loadSystemConfigs();
+    loadContacts();
+  }, []);
+
+  useEffect(() => {
+    if (activeTab === 'admins') loadAdmins();
+    if (activeTab === 'contacts') loadContacts();
+  }, [activeTab]);
+
+  const loadSystemConfigs = async () => {
+    try {
+      const foodCats = await systemConfigService.getConfigValue('FOOD_CATEGORIES');
+      const merchCats = await systemConfigService.getConfigValue('MERCHANDISE_CATEGORIES');
+      if (foodCats) setFoodCategories(foodCats);
+      if (merchCats) setMerchandiseCategories(merchCats);
+    } catch (error) {
+      console.error('Error loading system configs:', error);
+    }
+  };
+
+  const loadMovies = async () => {
+    const response = await movieService.getAllMovies();
+    setMovies(Array.isArray(response) ? response : []);
+  };
+
+  const loadMerchandise = async () => {
+    const response = await merchandiseService.getAllMerchandiseAdmin();
+    setMerchandise(Array.isArray(response) ? response : []);
+  };
+
+  const loadFoods = async () => {
+    const response = await foodService.getAllFoodsAdmin();
+    setFoods(Array.isArray(response) ? response : []);
+  };
+
+  const loadAdmins = async () => {
+    const data = await userService.getAllAdmins();
+    setAdmins(data);
+  };
+
+  const loadContacts = async () => {
+    try {
+      const response = await contactService.getAllContacts();
+      setContacts(Array.isArray(response) ? response : []);
+    } catch (error) {
+      console.error('Error loading contacts:', error);
+    }
+  };
+
+  // 3. Handlers (Merged)
+  const handleUpdateContactStatus = async (id, status) => {
+    try {
+      await contactService.updateContactStatus(id, status);
+      alert('Status updated!');
+      loadContacts();
+      if (selectedContact?.id === id) setSelectedContact({ ...selectedContact, status });
+    } catch (error) {
+      alert('Error updating status');
+    }
+  };
+
+  const handleDeleteContact = async (id) => {
+    if (window.confirm('Delete this message?')) {
+      await contactService.deleteContact(id);
+      loadContacts();
+      setSelectedContact(null);
+    }
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    return new Date(dateString).toLocaleDateString('en-US', { 
+      year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' 
+    });
+  };
+
+  const handleLogout = () => {
+    if (window.confirm('Logout?')) {
+      logout();
+      navigate('/');
+    }
+  };
+
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+
+  return (
+    <div className="admin-panel">
+      <aside className={`admin-sidebar ${isSidebarOpen ? 'open' : 'closed'}`}>
+        <div className="sidebar-header">
+          <h2>CINEMA ADMIN</h2>
+          <button className="sidebar-toggle" onClick={toggleSidebar}>{isSidebarOpen ? '◀' : '▶'}</button>
+        </div>
+        <nav className="sidebar-nav">
+          <button className={`nav-item ${activeTab === 'overview' ? 'active' : ''}`} onClick={() => setActiveTab('overview')}>📊 Overview</button>
+          <button className={`nav-item ${activeTab === 'movies' ? 'active' : ''}`} onClick={() => setActiveTab('movies')}>🎬 Movies</button>
+          <button className={`nav-item ${activeTab === 'showtimes' ? 'active' : ''}`} onClick={() => setActiveTab('showtimes')}>🎞️ Showtimes</button>
+          <button className={`nav-item ${activeTab === 'merchandise' ? 'active' : ''}`} onClick={() => setActiveTab('merchandise')}>🛍️ Merchandise</button>
+          <button className={`nav-item ${activeTab === 'foods' ? 'active' : ''}`} onClick={() => setActiveTab('foods')}>🍿 Food & Drinks</button>
+          <button className={`nav-item ${activeTab === 'contacts' ? 'active' : ''}`} onClick={() => setActiveTab('contacts')}>
+            📧 Messages {contacts.filter(c => c.status === 'NEW').length > 0 && <span className="badge-count">{contacts.filter(c => c.status === 'NEW').length}</span>}
+          </button>
+          <button className={`nav-item ${activeTab === 'admins' ? 'active' : ''}`} onClick={() => setActiveTab('admins')}>👥 Admin Users</button>
+        </nav>
+        <div className="sidebar-footer">
+          <button className="logout-btn" onClick={handleLogout}>🚪 Logout</button>
+        </div>
+      </aside>
+
+      <main className="admin-content">
+        <div className="content-header">
+          <h1 className="page-title">{activeTab.toUpperCase()} Management</h1>
+        </div>
+
+        {/* Tab Rendering Logic */}
+        {activeTab === 'overview' && (
+          <div className="stats-grid">
+            <div className="stat-card"><h3>Movies</h3><p>{movies.length}</p></div>
+            <div className="stat-card"><h3>Messages</h3><p>{contacts.length}</p></div>
+          </div>
+        )}
+
+        {activeTab === 'showtimes' && <ShowtimeManagement />}
+
+        {activeTab === 'contacts' && (
+          <div className="contacts-section">
+            <div className="contacts-stats">
+              <span className="stat-badge NEW">New: {contacts.filter(c => c.status === 'NEW').length}</span>
+              <span className="stat-badge RESOLVED">Resolved: {contacts.filter(c => c.status === 'RESOLVED').length}</span>
+            </div>
+            <div className="contacts-container">
+              <div className="contacts-list">
+                {contacts.map(c => (
+                  <div key={c.id} className={`contact-card ${c.status} ${selectedContact?.id === c.id ? 'selected' : ''}`} onClick={() => setSelectedContact(c)}>
+                    <h4>{c.name}</h4>
+                    <p>{c.subject}</p>
+                  </div>
+                ))}
+              </div>
+              {selectedContact && (
+                <div className="contact-details">
+                   <h3>{selectedContact.subject}</h3>
+                   <p>{selectedContact.message}</p>
+                   <button onClick={() => handleUpdateContactStatus(selectedContact.id, 'RESOLVED')}>Mark Resolved</button>
+                   <button onClick={() => handleDeleteContact(selectedContact.id)}>Delete</button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Add logic for Movies, Merchandise, Foods, and Admins tabs as needed */}
+      </main>
+    </div>
+  );
+}
+
+export default AdminDashboard;
