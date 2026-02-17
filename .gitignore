@@ -59,6 +59,7 @@ dist/
 build/
 # Allow frontend build directory for deployment
 !cinema-manager/frontend/build/
+!frontend/build/
 
 # Environment variables
 .env
