@@ -1,0 +1,679 @@
+/* Scope Cinemas Inspired Homepage */
+.home-page {
+  min-height: 100vh;
+  background: #000000;
+  color: white;
+  overflow-x: hidden;
+}
+
+/* Hero Banner */
+.hero-banner {
+  position: relative;
+  height: 90vh;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 60px;
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.95) 0%,
+    rgba(0, 0, 0, 0.7) 50%,
+    rgba(0, 0, 0, 0.3) 100%
+  );
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 800px;
+  padding: 0 40px;
+  text-align: left;
+}
+
+.hero-badge {
+  display: inline-block;
+  background: #c00;
+  color: white;
+  padding: 8px 20px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+}
+
+.hero-title {
+  font-size: 5rem;
+  font-weight: 900;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+  line-height: 1.1;
+}
+
+.hero-genre {
+  font-size: 1.3rem;
+  color: #ffcc00;
+  margin-bottom: 15px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.hero-rating {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+.stars {
+  color: #ffcc00;
+  font-size: 1.5rem;
+  letter-spacing: 3px;
+}
+
+.rating-text {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: white;
+}
+
+.hero-description {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  margin-bottom: 40px;
+  color: rgba(255, 255, 255, 0.9);
+  max-width: 650px;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.btn-primary {
+  background: #c00;
+  color: white;
+  padding: 18px 40px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(204, 0, 0, 0.4);
+}
+
+.btn-primary:hover {
+  background: #ff0000;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(204, 0, 0, 0.6);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  padding: 18px 40px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  border: 2px solid white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.btn-secondary:hover {
+  background: white;
+  color: #000;
+  transform: translateY(-3px);
+}
+
+.hero-indicators {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  z-index: 3;
+}
+
+.indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.indicator.active {
+  background: #c00;
+  width: 40px;
+  border-radius: 10px;
+}
+
+/* Sections */
+.movies-section {
+  padding: 60px 40px;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.now-showing-section {
+  background: #000;
+}
+
+.coming-soon-section {
+  background: linear-gradient(180deg, #000 0%, #0a0a0a 100%);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  padding-bottom: 20px;
+  border-bottom: 3px solid #c00;
+}
+
+.section-title {
+  font-size: 2.5rem;
+  font-weight: 900;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: white;
+  margin: 0;
+}
+
+.view-all-link {
+  color: #ffcc00;
+  text-decoration: none;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.view-all-link:hover {
+  color: #fff;
+  transform: translateX(5px);
+}
+
+/* Movie Cards - Scope Style */
+.movies-grid-scope {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 30px;
+}
+
+.scope-movie-card {
+  background: #0a0a0a;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+.scope-movie-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(204, 0, 0, 0.4);
+}
+
+.scope-poster-container {
+  position: relative;
+  width: 100%;
+  height: 420px;
+  overflow: hidden;
+}
+
+.scope-poster-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.scope-movie-card:hover .scope-poster-container img {
+  transform: scale(1.05);
+}
+
+.coming-soon-badge {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: #ffcc00;
+  color: #000;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  z-index: 2;
+}
+
+.scope-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.95) 0%,
+    rgba(0, 0, 0, 0.6) 50%,
+    transparent 100%
+  );
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 30px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.scope-movie-card:hover .scope-overlay {
+  opacity: 1;
+}
+
+.release-date {
+  color: #ffcc00;
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 15px;
+}
+
+.scope-buy-btn,
+.scope-trailer-btn {
+  width: 100%;
+  padding: 14px;
+  margin-bottom: 10px;
+  border: none;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  text-align: center;
+  display: block;
+}
+
+.scope-buy-btn {
+  background: #c00;
+  color: white;
+}
+
+.scope-buy-btn:hover {
+  background: #ff0000;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(204, 0, 0, 0.6);
+}
+
+.scope-trailer-btn {
+  background: transparent;
+  color: white;
+  border: 2px solid white;
+}
+
+.scope-trailer-btn:hover {
+  background: white;
+  color: #000;
+}
+
+.scope-movie-info {
+  padding: 20px;
+}
+
+.scope-movie-info h3 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: white;
+  text-transform: uppercase;
+}
+
+.scope-genre {
+  color: #999;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Deals Section */
+.deals-section {
+  padding: 80px 40px;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a0a0a 100%);
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.deals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 30px;
+}
+
+.deal-card {
+  background: #1a1a1a;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.deal-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(255, 204, 0, 0.3);
+}
+
+.deal-image {
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  text-align: center;
+}
+
+.deal-image h3 {
+  font-size: 3rem;
+  font-weight: 900;
+  margin-bottom: 10px;
+  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.deal-image p {
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.deal-info {
+  padding: 25px;
+}
+
+.deal-info h4 {
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+  color: white;
+  line-height: 1.5;
+}
+
+.deal-btn {
+  background: transparent;
+  color: #ffcc00;
+  border: 2px solid #ffcc00;
+  padding: 10px 25px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.deal-btn:hover {
+  background: #ffcc00;
+  color: #000;
+}
+
+/* Newsletter Section */
+.newsletter-section {
+  padding: 80px 40px;
+  background: linear-gradient(135deg, #c00 0%, #900 100%);
+  text-align: center;
+}
+
+.newsletter-content h3 {
+  font-size: 2.5rem;
+  font-weight: 900;
+  margin-bottom: 15px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.newsletter-content p {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+  opacity: 0.9;
+}
+
+.newsletter-form {
+  display: flex;
+  max-width: 600px;
+  margin: 0 auto;
+  gap: 15px;
+}
+
+.newsletter-form input {
+  flex: 1;
+  padding: 18px 25px;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 5px;
+  background: white;
+  color: #000;
+}
+
+.subscribe-btn {
+  background: #000;
+  color: white;
+  padding: 18px 40px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.subscribe-btn:hover {
+  background: #ffcc00;
+  color: #000;
+  transform: scale(1.05);
+}
+
+/* Trailer Modal */
+.trailer-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.95);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  padding: 20px;
+}
+
+.trailer-modal-content {
+  background: #1a1a1a;
+  padding: 40px;
+  border-radius: 15px;
+  max-width: 1000px;
+  width: 100%;
+  position: relative;
+  box-shadow: 0 0 50px rgba(204, 0, 0, 0.5);
+}
+
+.trailer-modal-content h2 {
+  color: white;
+  margin-bottom: 25px;
+  font-size: 2rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.close-modal {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  font-size: 2.5rem;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-modal:hover {
+  background: #c00;
+  transform: rotate(90deg);
+}
+
+.video-container {
+  position: relative;
+  padding-bottom: 56.25%;
+  height: 0;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.video-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-size: 2rem;
+  color: white;
+  background: #000;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .hero-title {
+    font-size: 4rem;
+  }
+  
+  .movies-grid-scope {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+}
+
+@media (max-width: 968px) {
+  .hero-banner {
+    height: 70vh;
+  }
+  
+  .hero-title {
+    font-size: 3rem;
+  }
+  
+  .hero-content {
+    padding: 0 20px;
+  }
+  
+  .hero-actions {
+    flex-direction: column;
+  }
+  
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .section-title {
+    font-size: 2rem;
+  }
+  
+  .movies-grid-scope {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+  }
+  
+  .deals-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .newsletter-form {
+    flex-direction: column;
+  }
+  
+  .newsletter-form input,
+  .subscribe-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2.5rem;
+  }
+  
+  .hero-genre {
+    font-size: 1rem;
+  }
+  
+  .hero-description {
+    font-size: 1rem;
+  }
+  
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .movies-section {
+    padding: 40px 20px;
+  }
+  
+  .deals-section {
+    padding: 60px 20px;
+  }
+  
+  .newsletter-section {
+    padding: 60px 20px;
+  }
+  
+  .newsletter-content h3 {
+    font-size: 2rem;
+  }
+}
