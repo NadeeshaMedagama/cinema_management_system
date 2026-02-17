@@ -10,7 +10,6 @@ function HomePage() {
   const [loading, setLoading] = useState(true);
   const [selectedTrailer, setSelectedTrailer] = useState(null);
   const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
-  const { user } = useAuth();
 
   useEffect(() => {
     loadMovies();
