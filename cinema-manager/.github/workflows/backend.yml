@@ -1,0 +1,169 @@
+name: Backend CI/CD
+
+on:
+  push:
+    branches: [ master, develop ]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend.yml'
+  pull_request:
+    branches: [ master, develop ]
+    paths:
+      - 'backend/**'
+
+jobs:
+  test:
+    name: Test Backend
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        cache: 'maven'
+
+    - name: Cache Maven packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+
+    - name: Run tests
+      working-directory: ./backend
+      run: ./mvnw clean test
+
+    - name: Generate test report
+      if: always()
+      uses: dorny/test-reporter@v1
+      with:
+        name: Backend Test Results
+        path: backend/target/surefire-reports/*.xml
+        reporter: java-junit
+        fail-on-error: false
+
+  build:
+    name: Build Backend
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        cache: 'maven'
+
+    - name: Build with Maven
+      working-directory: ./backend
+      run: ./mvnw clean package -DskipTests
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: backend-jar
+        path: backend/target/*.jar
+        retention-days: 7
+
+  deploy-heroku:
+    name: Deploy to Heroku
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Deploy to Heroku
+      uses: akhileshns/heroku-deploy@v3.13.15
+      with:
+        heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+        heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
+        heroku_email: ${{ secrets.HEROKU_EMAIL }}
+        appdir: "backend"
+
+  deploy-railway:
+    name: Deploy to Railway
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install Railway CLI
+      run: npm install -g @railway/cli
+
+    - name: Deploy to Railway
+      working-directory: ./backend
+      run: railway up
+      env:
+        RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
+  code-quality:
+    name: Code Quality Check
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+
+    - name: Cache SonarCloud packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.sonar/cache
+        key: ${{ runner.os }}-sonar
+        restore-keys: ${{ runner.os }}-sonar
+
+    - name: Build and analyze
+      working-directory: ./backend
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      run: |
+        ./mvnw clean verify sonar:sonar \
+          -Dsonar.projectKey=cinema-backend \
+          -Dsonar.organization=your-org \
+          -Dsonar.host.url=https://sonarcloud.io
+      continue-on-error: true
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: './backend'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+
+    - name: Upload Trivy results to GitHub Security
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: 'trivy-results.sarif'
