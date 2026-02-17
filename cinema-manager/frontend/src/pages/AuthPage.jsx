@@ -40,7 +40,7 @@ function AuthPage() {
             Sign Up
           </button>
         </div>
-        {showLogin ? <Login isAdmin={isAdmin} /> : <Signup isAdmin={isAdmin} />}
+        {showLogin ? <Login /> : <Signup />}
       </div>
     </div>
   );
