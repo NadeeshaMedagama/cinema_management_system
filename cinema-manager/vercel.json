@@ -1,0 +1,27 @@
+{
+  "version": 2,
+  "name": "cinema-management-system",
+  "builds": [
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "frontend/build"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "https://your-backend-url.com/api/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/frontend/$1"
+    }
+  ],
+  "env": {
+    "REACT_APP_API_URL": "@api_url",
+    "REACT_APP_STRIPE_PUBLIC_KEY": "@stripe_public_key"
+  }
+}
