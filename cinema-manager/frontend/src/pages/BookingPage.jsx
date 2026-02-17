@@ -24,9 +24,6 @@ function BookingPage() {
   const [selectedFood, setSelectedFood] = useState([]);
   const [selectedMerchandise, setSelectedMerchandise] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [merchandise, setMerchandise] = useState([]);
-  const [showMerchandise, setShowMerchandise] = useState(true);
-  const [addingToCart, setAddingToCart] = useState(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [createdBooking, setCreatedBooking] = useState(null);
   const [bookingInProgress, setBookingInProgress] = useState(false);
@@ -36,12 +33,14 @@ function BookingPage() {
     loadShowtimes();
     loadFoodItems();
     loadMerchandiseItems();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [movieId]);
 
   useEffect(() => {
     if (selectedShowtime) {
       loadSeats();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedShowtime]);
 
   const loadMovie = async () => {
@@ -97,16 +96,6 @@ function BookingPage() {
     }
   };
 
-  const loadMerchandise = async () => {
-    try {
-      const response = await merchandiseService.getAllMerchandise();
-      // Show only first 6 items
-      setMerchandise(response.slice(0, 6));
-    } catch (error) {
-      console.error('Error loading merchandise:', error);
-      setMerchandise([]);
-    }
-  };
 
 
   const toggleSeat = (seat) => {
@@ -247,20 +236,6 @@ function BookingPage() {
     }
   };
 
-  const handleSkipAndBook = () => {
-    if (createdBooking) {
-      alert(`Booking Completed!\nBooking Code: ${createdBooking.bookingCode}\nSeats: ${createdBooking.seatNumbers.join(', ')}\nTotal: $${createdBooking.totalAmount.toFixed(2)}\n\nYou can pay later at the cinema or through your profile.`);
-      setCreatedBooking(null);
-      setSelectedSeats([]);
-      navigate('/profile');
-    }
-  };
-
-  const handlePayNow = () => {
-    if (createdBooking) {
-      setShowPaymentModal(true);
-    }
-  };
 
   const handlePaymentSuccess = async (paymentResult) => {
     try {
@@ -286,16 +261,6 @@ function BookingPage() {
     return <div className="loading-container">Movie not found</div>;
   }
 
-  const formatDateTime = (dateTime) => {
-    const date = new Date(dateTime);
-    return date.toLocaleString('en-US', { 
-      month: 'short', 
-      day: 'numeric', 
-      hour: 'numeric', 
-      minute: '2-digit',
-      hour12: true 
-    });
-  };
 
   const formatTime = (timeString) => {
     // Convert 24-hour format to 12-hour format

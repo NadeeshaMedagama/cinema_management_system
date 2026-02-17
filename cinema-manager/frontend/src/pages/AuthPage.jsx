@@ -7,7 +7,6 @@ import './AuthPage.css';
 
 function AuthPage() {
   const [showLogin, setShowLogin] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
 
