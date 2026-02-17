@@ -21,6 +21,7 @@ function MovieDetailsPage() {
   useEffect(() => {
     loadMovie();
     loadShowtimes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const loadMovie = async () => {
@@ -95,7 +96,7 @@ function MovieDetailsPage() {
 
   const getYouTubeEmbedUrl = (url) => {
     if (!url) return null;
-    const videoIdMatch = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
+    const videoIdMatch = url.match(/(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/);
     if (videoIdMatch && videoIdMatch[1]) {
       return `https://www.youtube.com/embed/${videoIdMatch[1]}`;
     }

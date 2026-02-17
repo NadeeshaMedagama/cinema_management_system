@@ -18,6 +18,7 @@ function MoviesPage() {
 
   useEffect(() => {
     filterMovies();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTerm, selectedGenre, movies]);
 
   const loadMovies = async () => {

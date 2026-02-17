@@ -30,6 +30,7 @@ const MerchandiseShop = () => {
     if (isAuthenticated) {
       loadCart();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated]);
 
   useEffect(() => {
