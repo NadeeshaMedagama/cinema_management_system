@@ -54,7 +54,6 @@ lerna-debug.log*
 .pnpm-debug.log*
 
 # Build outputs
-build/
 dist/
 .cache/
 
