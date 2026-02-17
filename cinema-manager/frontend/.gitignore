@@ -19,6 +19,15 @@ target/
 *.iml
 *.ipr
 
+# Ignore all build directories
+!build/
+
+# But allow frontend build directories (must come after the ignore)
+!cinema-manager/frontend/build/
+!cinema-manager/frontend/build/**
+!frontend/build/
+!frontend/build/**
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/

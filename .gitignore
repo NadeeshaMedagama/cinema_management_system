@@ -58,7 +58,7 @@ dist/
 .cache/
 
 # Ignore all build directories
-build/
+!build/
 
 # But allow frontend build directories (must come after the ignore)
 !cinema-manager/frontend/build/
