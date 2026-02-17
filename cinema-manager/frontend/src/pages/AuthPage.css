@@ -1,0 +1,132 @@
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-page::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 50%, rgba(233, 69, 96, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(118, 75, 162, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.auth-container {
+  background: linear-gradient(135deg, 
+    rgba(102, 126, 234, 0.15) 0%, 
+    rgba(118, 75, 162, 0.15) 25%,
+    rgba(240, 147, 251, 0.15) 50%,
+    rgba(233, 69, 96, 0.15) 75%,
+    rgba(255, 200, 124, 0.15) 100%);
+  backdrop-filter: blur(20px);
+  border-radius: 32px;
+  padding: 70px 150px;
+  max-width: 12000px;
+  width: 99%;
+  box-shadow: 
+    0 25px 50px rgba(0, 0, 0, 0.3),
+    0 0 0 2px rgba(255, 255, 255, 0.3) inset,
+    0 0 80px rgba(102, 126, 234, 0.2);
+  position: relative;
+  z-index: 1;
+  animation: fadeInUp 0.6s ease;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.auth-header {
+  margin-bottom: 35px;
+}
+
+.cinema-logo {
+  font-size: 5.5rem;
+  text-align: center;
+  margin-bottom: 25px;
+  filter: drop-shadow(0 4px 8px rgba(233, 69, 96, 0.3));
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.auth-header h1 {
+  color: #1a1a2e;
+  margin-bottom: 12px;
+  font-size: 3.4rem;
+  text-align: center;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #e94560, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.auth-header .subtitle {
+  color: #6b7280;
+  text-align: center;
+  margin-bottom: 0;
+  font-size: 1.25rem;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+.toggle-buttons {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 35px;
+  background: #f3f4f6;
+  padding: 6px;
+  border-radius: 12px;
+}
+
+.toggle-buttons button {
+  flex: 1;
+  padding: 18px 28px;
+  border: none;
+  background: transparent;
+  color: #6b7280;
+  border-radius: 10px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.toggle-buttons button.active {
+  background: linear-gradient(135deg, #e94560 0%, #764ba2 50%, #f093fb 100%);
+  color: white;
+  box-shadow: 
+    0 6px 16px rgba(233, 69, 96, 0.35),
+    0 0 0 1px rgba(255, 255, 255, 0.15) inset;
+  transform: scale(1.03);
+}
+
+.toggle-buttons button:hover:not(.active) {
+  color: #1a1a2e;
+  background: rgba(233, 69, 96, 0.08);
+}
