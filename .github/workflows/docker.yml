@@ -47,7 +47,7 @@ jobs:
     - name: Build and push Backend Docker image
       uses: docker/build-push-action@v5
       with:
-        context: ./backend
+        context: ./cinema-manager/backend
         file: ./backend/Dockerfile
         push: ${{ github.event_name != 'pull_request' }}
         tags: ${{ steps.meta.outputs.tags }}
@@ -92,7 +92,7 @@ jobs:
     - name: Build and push Frontend Docker image
       uses: docker/build-push-action@v5
       with:
-        context: ./frontend
+        context: ./cinema-manager/frontend
         file: ./frontend/Dockerfile
         push: ${{ github.event_name != 'pull_request' }}
         tags: ${{ steps.meta.outputs.tags }}
