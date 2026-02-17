@@ -56,10 +56,15 @@ lerna-debug.log*
 # Build outputs
 dist/
 .cache/
+
+# Ignore all build directories
 build/
-# Allow frontend build directory for deployment
+
+# But allow frontend build directories (must come after the ignore)
 !cinema-manager/frontend/build/
+!cinema-manager/frontend/build/**
 !frontend/build/
+!frontend/build/**
 
 # Environment variables
 .env
