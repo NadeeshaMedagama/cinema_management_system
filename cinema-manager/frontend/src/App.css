@@ -1,0 +1,111 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding-top: 80px; /* Add padding for fixed navbar */
+}
+
+.App {
+  width: 100%;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+  position: relative;
+}
+
+/* Auth Page Container */
+.App > div:not(.navbar) {
+  width: 100%;
+}
+
+.container {
+  background: rgba(26, 26, 30, 0.95);
+  padding: 50px;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(255, 0, 110, 0.3);
+  border: 1px solid rgba(255, 0, 110, 0.2);
+  max-width: 450px;
+  width: 90%;
+  margin: 20px auto;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 30px 20px;
+    width: 95%;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 25px 15px;
+    width: 100%;
+    margin: 10px;
+    border-radius: 15px;
+  }
+}
+
+.container h1 {
+  margin-bottom: 10px;
+  font-size: 2.5rem;
+  background: linear-gradient(90deg, #ff006e 0%, #8b00ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subtitle {
+  color: #00f5ff;
+  margin-bottom: 30px;
+  font-size: 1rem;
+  font-weight: 300;
+}
+
+.toggle-buttons {
+  margin-bottom: 30px;
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.toggle-buttons button {
+  padding: 12px 30px;
+  border: 2px solid #444;
+  cursor: pointer;
+  background-color: transparent;
+  color: white;
+  border-radius: 25px;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.toggle-buttons button.active {
+  background: linear-gradient(90deg, #ff006e 0%, #8b00ff 100%);
+  border-color: #ff006e;
+  box-shadow: 0 4px 15px rgba(255, 0, 110, 0.4);
+  transform: translateY(-2px);
+}
+
+.toggle-buttons button:hover {
+  border-color: #00f5ff;
+  box-shadow: 0 0 20px rgba(0, 245, 255, 0.3);
+}
+
+.success {
+  color: #00ff88;
+  margin-top: 15px;
+  font-weight: 500;
+}
+
+.error {
+  color: #ff006e;
+  margin-top: 15px;
+  font-weight: 500;
+}
