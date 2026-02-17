@@ -13,7 +13,6 @@ const StripeCardForm = ({ amount, onPaymentSuccess, onClose, bookingId, orderId,
   const elements = useElements();
   const [processing, setProcessing] = useState(false);
   const [clientSecret, setClientSecret] = useState('');
-  const [paymentIntentId, setPaymentIntentId] = useState('');
 
   useEffect(() => {
     // Create PaymentIntent when component mounts
@@ -21,7 +20,6 @@ const StripeCardForm = ({ amount, onPaymentSuccess, onClose, bookingId, orderId,
       try {
         const paymentIntent = await paymentService.createPaymentIntent(amount, 'usd');
         setClientSecret(paymentIntent.clientSecret);
-        setPaymentIntentId(paymentIntent.paymentIntentId);
       } catch (error) {
         console.error('Error initializing payment:', error);
         alert('Failed to initialize payment. Please try again.');

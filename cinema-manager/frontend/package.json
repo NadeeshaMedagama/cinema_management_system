@@ -35,5 +35,8 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://localhost:8081"
+  "proxy": "http://localhost:8081",
+  "resolutions": {
+    "rollup-plugin-terser": "npm:@rollup/plugin-terser@^0.4.0"
+  }
 }
