@@ -56,6 +56,9 @@ lerna-debug.log*
 # Build outputs
 dist/
 .cache/
+build/
+# Allow frontend build directory for deployment
+!cinema-manager/frontend/build/
 
 # Environment variables
 .env
@@ -127,8 +130,6 @@ temp/
 # Vercel
 .vercel
 
-# Production
-/build
 
 # Misc
 .eslintcache
