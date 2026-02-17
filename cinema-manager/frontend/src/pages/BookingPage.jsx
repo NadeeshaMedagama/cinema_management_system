@@ -26,7 +26,6 @@ function BookingPage() {
   const [loading, setLoading] = useState(true);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [createdBooking, setCreatedBooking] = useState(null);
-  const [bookingInProgress, setBookingInProgress] = useState(false);
 
   useEffect(() => {
     loadMovie();
@@ -188,7 +187,6 @@ function BookingPage() {
       return;
     }
 
-    setBookingInProgress(true);
     try {
       const seatsTotal = selectedSeats.reduce((sum, seat) => sum + seat.price, 0);
       const foodTotal = selectedFood.reduce((sum, item) => sum + item.subtotal, 0);
@@ -231,8 +229,6 @@ function BookingPage() {
       console.error('Booking error:', error);
       alert('Error creating booking: ' + (error.response?.data?.message || error.message || 'Some seats may have been booked by another user. Please refresh and try again.'));
       loadSeats(); // Refresh seats to show updated availability
-    } finally {
-      setBookingInProgress(false);
     }
   };
 

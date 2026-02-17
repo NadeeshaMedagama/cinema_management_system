@@ -35,6 +35,7 @@ const MerchandiseShop = () => {
 
   useEffect(() => {
     filterMerchandise();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCategory, searchQuery, merchandiseList]);
 
   const fetchMerchandise = async () => {

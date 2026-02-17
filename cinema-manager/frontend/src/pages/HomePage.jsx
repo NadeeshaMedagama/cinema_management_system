@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import movieService from '../services/movieService';
-import { useAuth } from '../context/AuthContext';
 import './HomePage.css';
 
 function HomePage() {
