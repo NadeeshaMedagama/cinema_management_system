@@ -57,14 +57,8 @@ lerna-debug.log*
 dist/
 .cache/
 
-# Ignore all build directories
-!build/
-
-# But allow frontend build directories (must come after the ignore)
-!cinema-manager/frontend/build/
-!cinema-manager/frontend/build/**
-!frontend/build/
-!frontend/build/**
+# DO NOT ignore frontend build directory - we want to push it to GitHub
+# (No build/ ignore rule here since cinema-manager/.gitignore handles it)
 
 # Environment variables
 .env
