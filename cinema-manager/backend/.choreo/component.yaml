@@ -1,5 +1,6 @@
 # Choreo Component Configuration for Cinema Management System
-schemaVersion: 1.2
+# Schema Version 1.1
+schemaVersion: 1.1
 
 # Incoming connection details for the component
 endpoints:
@@ -12,31 +13,25 @@ endpoints:
     type: REST
     networkVisibilities:
       - Public
-      - Organization
-    schemaFilePath: openapi.yaml
-
-# Outgoing connection details for the component
-dependencies:
-  # MongoDB Atlas connection
-  serviceReferences:
-    - name: mongodb-connection
-      connectionConfig:
-        - name: MONGODB_URI
-          description: MongoDB Atlas connection string
 
 # Runtime configurations
 configurations:
-  # Environment variables from connections
+  # Environment variables
   env:
     # MongoDB Configuration
     - name: MONGODB_URI
       valueFrom:
-        secretRef:
-          name: mongodb-uri
+        configForm:
+          displayName: MongoDB Connection URI
+          description: MongoDB Atlas connection string
+          required: true
+          type: string
+
     - name: MONGODB_DATABASE
       valueFrom:
         configForm:
           displayName: MongoDB Database Name
+          description: Name of the MongoDB database
           required: true
           type: string
           default: cinema_db
@@ -46,6 +41,7 @@ configurations:
       valueFrom:
         configForm:
           displayName: Server Port
+          description: Port the server runs on
           required: false
           type: string
           default: "8081"
@@ -53,12 +49,17 @@ configurations:
     # JWT Configuration
     - name: JWT_SECRET
       valueFrom:
-        secretRef:
-          name: jwt-secret
+        configForm:
+          displayName: JWT Secret Key
+          description: Secret key for JWT token signing (min 32 characters)
+          required: true
+          type: string
+
     - name: JWT_EXPIRATION
       valueFrom:
         configForm:
-          displayName: JWT Token Expiration (ms)
+          displayName: JWT Token Expiration
+          description: JWT token expiration time in milliseconds
           required: false
           type: string
           default: "86400000"
@@ -67,85 +68,95 @@ configurations:
     - name: CORS_ALLOWED_ORIGINS
       valueFrom:
         configForm:
-          displayName: CORS Allowed Origins (comma-separated)
+          displayName: CORS Allowed Origins
+          description: Comma-separated list of allowed origins
           required: true
           type: string
-          default: https://cinema-management-system-tan.vercel.app,http://localhost:3000
+          default: http://localhost:3000
 
-    # Mail Configuration
+    # Mail Configuration (Optional)
     - name: MAIL_HOST
       valueFrom:
         configForm:
           displayName: Mail Server Host
+          description: SMTP mail server hostname
           required: false
           type: string
           default: smtp.gmail.com
+
     - name: MAIL_PORT
       valueFrom:
         configForm:
           displayName: Mail Server Port
+          description: SMTP mail server port
           required: false
           type: string
           default: "587"
+
     - name: MAIL_USERNAME
       valueFrom:
-        secretRef:
-          name: mail-username
+        configForm:
+          displayName: Mail Username
+          description: SMTP username/email
+          required: false
+          type: string
+
     - name: MAIL_PASSWORD
       valueFrom:
-        secretRef:
-          name: mail-password
+        configForm:
+          displayName: Mail Password
+          description: SMTP password or app password
+          required: false
+          type: string
 
-    # Stripe Payment Configuration
+    # Stripe Payment Configuration (Optional)
     - name: STRIPE_API_KEY
       valueFrom:
-        secretRef:
-          name: stripe-api-key
+        configForm:
+          displayName: Stripe API Key
+          description: Stripe secret API key
+          required: false
+          type: string
+
     - name: STRIPE_PUBLIC_KEY
       valueFrom:
-        secretRef:
-          name: stripe-public-key
+        configForm:
+          displayName: Stripe Public Key
+          description: Stripe publishable key
+          required: false
+          type: string
+
     - name: STRIPE_WEBHOOK_SECRET
       valueFrom:
-        secretRef:
-          name: stripe-webhook-secret
+        configForm:
+          displayName: Stripe Webhook Secret
+          description: Stripe webhook signing secret
+          required: false
+          type: string
 
     # Application Configuration
     - name: ADMIN_EMAIL
       valueFrom:
         configForm:
-          displayName: Default Admin Email
+          displayName: Admin Email
+          description: Default admin email address
           required: false
           type: string
           default: admin@cinema.com
+
     - name: ADMIN_PASSWORD
       valueFrom:
-        secretRef:
-          name: admin-password
+        configForm:
+          displayName: Admin Password
+          description: Default admin password
+          required: false
+          type: string
+
     - name: USER_WELCOME_BONUS
       valueFrom:
         configForm:
-          displayName: User Welcome Bonus Points
+          displayName: Welcome Bonus Points
+          description: Loyalty points given to new users
           required: false
           type: string
           default: "100"
-    - name: SEATS_ROWS
-      valueFrom:
-        configForm:
-          displayName: Seat Rows (comma-separated)
-          required: false
-          type: string
-          default: A,B,C,D,E,F,G,H,I,J
-    - name: SEATS_PER_ROW
-      valueFrom:
-        configForm:
-          displayName: Seats Per Row
-          required: false
-          type: string
-          default: "10"
-
-# Build configuration
-build:
-  # Docker build context
-  dockerfile: cinema-manager/backend/Dockerfile
-  context: cinema-manager/backend
