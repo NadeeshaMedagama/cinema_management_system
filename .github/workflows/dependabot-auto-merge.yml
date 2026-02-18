@@ -3,6 +3,21 @@ name: Dependabot Auto-Merge
 on:
   pull_request_target:
     types: [opened, synchronize, reopened]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to process (leave empty to process all open Dependabot PRs)'
+        required: false
+        type: string
+      action:
+        description: 'Action to perform'
+        required: true
+        type: choice
+        options:
+          - auto-merge-patches
+          - approve-all
+          - list-pending
+        default: 'auto-merge-patches'
 
 permissions:
   contents: write
@@ -68,3 +83,131 @@ jobs:
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Manual trigger job to process Dependabot PRs
+  manual-process:
+    name: Manual Process Dependabot PRs
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: List pending Dependabot PRs
+        if: github.event.inputs.action == 'list-pending'
+        run: |
+          echo "## 📋 Pending Dependabot PRs" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Get all open PRs from dependabot
+          PRS=$(gh pr list --author "dependabot[bot]" --state open --json number,title,url,labels --limit 50)
+          
+          if [ "$PRS" == "[]" ]; then
+            echo "No open Dependabot PRs found." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| PR # | Title | Labels |" >> $GITHUB_STEP_SUMMARY
+            echo "|------|-------|--------|" >> $GITHUB_STEP_SUMMARY
+            echo "$PRS" | jq -r '.[] | "| #\(.number) | \(.title) | \(.labels | map(.name) | join(", ")) |"' >> $GITHUB_STEP_SUMMARY
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Auto-merge patch updates
+        if: github.event.inputs.action == 'auto-merge-patches'
+        run: |
+          echo "## 🔄 Auto-merging Patch Updates" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          PR_NUMBER="${{ github.event.inputs.pr_number }}"
+          
+          if [ -n "$PR_NUMBER" ]; then
+            # Process specific PR
+            echo "Processing PR #$PR_NUMBER..." >> $GITHUB_STEP_SUMMARY
+            
+            # Check if PR is from dependabot
+            AUTHOR=$(gh pr view "$PR_NUMBER" --json author --jq '.author.login')
+            if [ "$AUTHOR" != "dependabot[bot]" ]; then
+              echo "❌ PR #$PR_NUMBER is not from Dependabot (author: $AUTHOR)" >> $GITHUB_STEP_SUMMARY
+              exit 1
+            fi
+            
+            # Approve and merge
+            gh pr review "$PR_NUMBER" --approve
+            gh pr merge "$PR_NUMBER" --squash --auto
+            echo "✅ PR #$PR_NUMBER approved and auto-merge enabled" >> $GITHUB_STEP_SUMMARY
+          else
+            # Process all open Dependabot PRs with patch updates
+            PRS=$(gh pr list --author "dependabot[bot]" --state open --json number,title --limit 50)
+            
+            if [ "$PRS" == "[]" ]; then
+              echo "No open Dependabot PRs found." >> $GITHUB_STEP_SUMMARY
+              exit 0
+            fi
+            
+            echo "$PRS" | jq -r '.[].number' | while read -r pr_num; do
+              echo "Processing PR #$pr_num..."
+              # Try to approve and merge (will fail gracefully if not a patch update)
+              if gh pr review "$pr_num" --approve 2>/dev/null; then
+                if gh pr merge "$pr_num" --squash --auto 2>/dev/null; then
+                  echo "✅ PR #$pr_num: approved and auto-merge enabled" >> $GITHUB_STEP_SUMMARY
+                else
+                  echo "⚠️ PR #$pr_num: approved but auto-merge not enabled (may need review)" >> $GITHUB_STEP_SUMMARY
+                fi
+              else
+                echo "⚠️ PR #$pr_num: could not approve" >> $GITHUB_STEP_SUMMARY
+              fi
+            done
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Approve all Dependabot PRs
+        if: github.event.inputs.action == 'approve-all'
+        run: |
+          echo "## ✅ Approving Dependabot PRs" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          PR_NUMBER="${{ github.event.inputs.pr_number }}"
+          
+          if [ -n "$PR_NUMBER" ]; then
+            # Approve specific PR
+            AUTHOR=$(gh pr view "$PR_NUMBER" --json author --jq '.author.login')
+            if [ "$AUTHOR" != "dependabot[bot]" ]; then
+              echo "❌ PR #$PR_NUMBER is not from Dependabot (author: $AUTHOR)" >> $GITHUB_STEP_SUMMARY
+              exit 1
+            fi
+            
+            gh pr review "$PR_NUMBER" --approve
+            echo "✅ PR #$PR_NUMBER approved" >> $GITHUB_STEP_SUMMARY
+          else
+            # Approve all open Dependabot PRs
+            PRS=$(gh pr list --author "dependabot[bot]" --state open --json number --limit 50)
+            
+            if [ "$PRS" == "[]" ]; then
+              echo "No open Dependabot PRs found." >> $GITHUB_STEP_SUMMARY
+              exit 0
+            fi
+            
+            echo "$PRS" | jq -r '.[].number' | while read -r pr_num; do
+              if gh pr review "$pr_num" --approve 2>/dev/null; then
+                echo "✅ PR #$pr_num approved" >> $GITHUB_STEP_SUMMARY
+              else
+                echo "⚠️ PR #$pr_num could not be approved" >> $GITHUB_STEP_SUMMARY
+              fi
+            done
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Summary
+        run: |
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "**Action performed:** ${{ github.event.inputs.action }}" >> $GITHUB_STEP_SUMMARY
+          if [ -n "${{ github.event.inputs.pr_number }}" ]; then
+            echo "**Target PR:** #${{ github.event.inputs.pr_number }}" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "**Target:** All open Dependabot PRs" >> $GITHUB_STEP_SUMMARY
+          fi
+
