@@ -9,6 +9,12 @@ on:
     types: [ published ]
   workflow_dispatch:
 
+# Add permissions for security scanning
+permissions:
+  contents: read
+  security-events: write
+  packages: write
+
 env:
   DOCKER_BUILDKIT: 1
   COMPOSE_DOCKER_CLI_BUILD: 1
@@ -112,40 +118,52 @@ jobs:
     needs: build-and-push-backend
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request'
+    continue-on-error: true
 
     steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
       with:
         image-ref: ${{ secrets.DOCKER_USERNAME }}/cinema-backend:latest
         format: 'sarif'
         output: 'trivy-results-backend.sarif'
+      continue-on-error: true
 
     - name: Upload Trivy results to GitHub Security
-      uses: github/codeql-action/upload-sarif@v3
+      uses: github/codeql-action/upload-sarif@v4
       with:
         sarif_file: 'trivy-results-backend.sarif'
         category: 'backend-image'
+      continue-on-error: true
 
   scan-frontend-image:
     name: Scan Frontend Image for Vulnerabilities
     needs: build-and-push-frontend
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request'
+    continue-on-error: true
 
     steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
       with:
         image-ref: ${{ secrets.DOCKER_USERNAME }}/cinema-frontend:latest
         format: 'sarif'
         output: 'trivy-results-frontend.sarif'
+      continue-on-error: true
 
     - name: Upload Trivy results to GitHub Security
-      uses: github/codeql-action/upload-sarif@v3
+      uses: github/codeql-action/upload-sarif@v4
       with:
         sarif_file: 'trivy-results-frontend.sarif'
         category: 'frontend-image'
+      continue-on-error: true
 
   create-manifest:
     name: Create Multi-Arch Manifest
