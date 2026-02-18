@@ -2,6 +2,12 @@
 # Schema Version 1.2
 schemaVersion: "1.2"
 
+# Build configuration - MUST use Dockerfile to avoid buildpack Java version issues
+buildConfig:
+  type: docker
+  dockerfile: Dockerfile
+  context: .
+
 # Incoming connection details for the component
 endpoints:
   # Backend REST API Endpoint
@@ -72,10 +78,3 @@ configurations:
 
     - name: USER_WELCOME_BONUS
       value: "100"
-
-# Build configuration - Use Dockerfile instead of buildpacks
-build:
-  docker:
-    dockerfilePath: Dockerfile
-    context: .
-
