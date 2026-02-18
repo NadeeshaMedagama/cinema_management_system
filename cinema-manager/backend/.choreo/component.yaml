@@ -1,6 +1,6 @@
 # Choreo Component Configuration for Cinema Management System
-# Schema Version 1.1
-schemaVersion: 1.1
+# Schema Version 1.2
+schemaVersion: "1.2"
 
 # Incoming connection details for the component
 endpoints:
@@ -20,7 +20,7 @@ configurations:
   env:
     # MongoDB Configuration
     - name: MONGODB_URI
-      value: "${MONGODB_URI}"
+      value: ${MONGODB_URI}
 
     - name: MONGODB_DATABASE
       value: cinema_db
@@ -31,14 +31,14 @@ configurations:
 
     # JWT Configuration
     - name: JWT_SECRET
-      value: "${JWT_SECRET}"
+      value: ${JWT_SECRET}
 
     - name: JWT_EXPIRATION
       value: "86400000"
 
     # CORS Configuration
     - name: CORS_ALLOWED_ORIGINS
-      value: "${CORS_ALLOWED_ORIGINS}"
+      value: ${CORS_ALLOWED_ORIGINS}
 
     # Mail Configuration
     - name: MAIL_HOST
@@ -48,27 +48,34 @@ configurations:
       value: "587"
 
     - name: MAIL_USERNAME
-      value: "${MAIL_USERNAME}"
+      value: ${MAIL_USERNAME}
 
     - name: MAIL_PASSWORD
-      value: "${MAIL_PASSWORD}"
+      value: ${MAIL_PASSWORD}
 
     # Stripe Payment Configuration
     - name: STRIPE_API_KEY
-      value: "${STRIPE_API_KEY}"
+      value: ${STRIPE_API_KEY}
 
     - name: STRIPE_PUBLIC_KEY
-      value: "${STRIPE_PUBLIC_KEY}"
+      value: ${STRIPE_PUBLIC_KEY}
 
     - name: STRIPE_WEBHOOK_SECRET
-      value: "${STRIPE_WEBHOOK_SECRET}"
+      value: ${STRIPE_WEBHOOK_SECRET}
 
     # Application Configuration
     - name: ADMIN_EMAIL
       value: admin@cinema.com
 
     - name: ADMIN_PASSWORD
-      value: "${ADMIN_PASSWORD}"
+      value: ${ADMIN_PASSWORD}
 
     - name: USER_WELCOME_BONUS
       value: "100"
+
+# Build configuration - Use Dockerfile instead of buildpacks
+build:
+  docker:
+    dockerfilePath: Dockerfile
+    context: .
+
