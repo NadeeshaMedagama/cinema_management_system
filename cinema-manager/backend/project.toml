@@ -1,0 +1,14 @@
+# Project Configuration for Cloud Native Buildpacks
+# This file instructs the build system to skip buildpacks and use Dockerfile
+
+[_]
+schema-version = "0.2"
+
+# Exclude from buildpack detection - force Dockerfile usage
+[[io.buildpacks.build.env]]
+name = "BP_JVM_VERSION"
+value = "17"
+
+[[io.buildpacks.build.env]]
+name = "BP_MAVEN_BUILD_ARGUMENTS"
+value = "-DskipTests package"
