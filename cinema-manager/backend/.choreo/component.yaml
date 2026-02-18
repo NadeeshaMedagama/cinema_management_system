@@ -43,8 +43,8 @@ configurations:
       value: "86400000"
 
     # CORS Configuration
-    - name: CORS_ALLOWED_ORIGINS
-      value: ${CORS_ALLOWED_ORIGINS}
+    - name: APP_CORS_ALLOWED_ORIGINS
+      value: ${APP_CORS_ALLOWED_ORIGINS}
 
     # Mail Configuration
     - name: MAIL_HOST
