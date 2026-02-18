@@ -13,16 +13,16 @@ RUN ./mvnw dependency:go-offline
 COPY src ./src
 RUN ./mvnw clean package -DskipTests
 
-# Runtime stage
-FROM eclipse-temurin:17-jre-alpine
+# Runtime stage - using non-alpine image for multi-arch support
+FROM eclipse-temurin:17-jre
 
 WORKDIR /app
 
-# Install wget for health check
-RUN apk add --no-cache wget
+# Install wget for health check (debian-based)
+RUN apt-get update && apt-get install -y --no-install-recommends wget && rm -rf /var/lib/apt/lists/*
 
-# Create non-root user
-RUN addgroup -S spring && adduser -S spring -G spring
+# Create non-root user (Debian-style)
+RUN groupadd -r spring && useradd -r -g spring spring
 USER spring:spring
 
 # Copy jar from build stage
