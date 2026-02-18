@@ -39,10 +39,15 @@ jobs:
         id: version
         run: |
           if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            # Remove 'v' prefix if user included it in manual input
             VERSION="${{ github.event.inputs.version }}"
+            VERSION="${VERSION#v}"
             IS_PRERELEASE="${{ github.event.inputs.prerelease }}"
           else
+            # Extract version from tag (remove refs/tags/v prefix)
             VERSION="${GITHUB_REF#refs/tags/v}"
+            # Also handle tags without 'v' prefix
+            VERSION="${VERSION#refs/tags/}"
             # Check if it's a prerelease (contains -alpha, -beta, -rc, etc.)
             if [[ "$VERSION" == *"-"* ]]; then
               IS_PRERELEASE="true"
@@ -111,12 +116,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: cinema-manager/frontend/package-lock.json
 
       - name: Install dependencies
         working-directory: ./cinema-manager/frontend
-        run: npm ci
+        run: |
+          # Use npm install instead of npm ci to handle package-lock.json sync issues
+          npm install --legacy-peer-deps
 
       - name: Update version in package.json
         working-directory: ./cinema-manager/frontend
