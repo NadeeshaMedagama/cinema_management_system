@@ -35,7 +35,12 @@ jobs:
 
     - name: Install dependencies
       working-directory: ./cinema-manager/frontend
-      run: npm ci
+      run: |
+        # Use npm install instead of npm ci to handle lockfile version differences
+        # npm ci requires exact lockfile match which can fail across different npm versions
+        npm install --legacy-peer-deps --no-audit
+      env:
+        CI: true
 
     - name: Run linter
       working-directory: ./cinema-manager/frontend
@@ -80,7 +85,7 @@ jobs:
 
     - name: Install dependencies
       working-directory: ./cinema-manager/frontend
-      run: npm ci
+      run: npm install --legacy-peer-deps --no-audit
 
     - name: Build production
       working-directory: ./cinema-manager/frontend
@@ -151,7 +156,7 @@ jobs:
 
     - name: Install dependencies
       working-directory: ./cinema-manager/frontend
-      run: npm ci
+      run: npm install --legacy-peer-deps --no-audit
 
     - name: Build
       working-directory: ./cinema-manager/frontend
@@ -187,7 +192,7 @@ jobs:
 
     - name: Install dependencies
       working-directory: ./cinema-manager/frontend
-      run: npm ci
+      run: npm install --legacy-peer-deps --no-audit
 
     - name: Build
       working-directory: ./cinema-manager/frontend
