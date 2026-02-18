@@ -1,0 +1,70 @@
+name: Dependabot Auto-Merge
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  dependabot-auto-merge:
+    name: Auto-merge Dependabot PRs
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]'
+
+    steps:
+      - name: Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Auto-approve patch and minor updates
+        if: steps.metadata.outputs.update-type == 'version-update:semver-patch' || steps.metadata.outputs.update-type == 'version-update:semver-minor'
+        run: gh pr review --approve "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Enable auto-merge for patch updates
+        if: steps.metadata.outputs.update-type == 'version-update:semver-patch'
+        run: gh pr merge --auto --squash "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Comment on major updates
+        if: steps.metadata.outputs.update-type == 'version-update:semver-major'
+        run: |
+          gh pr comment "$PR_URL" --body "⚠️ **Major version update detected!**
+
+          This PR contains a major version update which may include breaking changes.
+          
+          **Please review carefully before merging:**
+          - Check the changelog for breaking changes
+          - Review migration guides if available
+          - Test thoroughly in a development environment
+          
+          **Dependency:** ${{ steps.metadata.outputs.dependency-names }}
+          **Update type:** ${{ steps.metadata.outputs.update-type }}
+          **New version:** ${{ steps.metadata.outputs.new-version }}"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Add labels based on update type
+        run: |
+          UPDATE_TYPE="${{ steps.metadata.outputs.update-type }}"
+          
+          if [[ "$UPDATE_TYPE" == "version-update:semver-patch" ]]; then
+            gh pr edit "$PR_URL" --add-label "auto-merge,patch-update"
+          elif [[ "$UPDATE_TYPE" == "version-update:semver-minor" ]]; then
+            gh pr edit "$PR_URL" --add-label "review-required,minor-update"
+          elif [[ "$UPDATE_TYPE" == "version-update:semver-major" ]]; then
+            gh pr edit "$PR_URL" --add-label "breaking-change,major-update"
+          fi
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
