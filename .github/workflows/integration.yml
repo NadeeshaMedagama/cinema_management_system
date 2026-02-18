@@ -61,6 +61,9 @@ jobs:
         export ADMIN_EMAIL=admin@test.com
         export ADMIN_PASSWORD=admin123
         export USER_WELCOME_BONUS=100
+        export STRIPE_API_KEY=sk_test_integration_testing_key
+        export STRIPE_PUBLIC_KEY=pk_test_integration_testing_key
+        export STRIPE_WEBHOOK_SECRET=whsec_test_integration_secret
         
         # Run JAR in background with nohup
         nohup java -jar target/*.jar > backend.log 2>&1 &
