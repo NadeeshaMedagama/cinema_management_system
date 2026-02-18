@@ -56,7 +56,9 @@ jobs:
 
     - name: Wait for Backend
       run: |
-        timeout 180 bash -c 'until curl -f http://localhost:8081/api/movies 2>/dev/null; do sleep 2; done'
+        echo "Waiting for backend to start..."
+        timeout 180 bash -c 'until curl -f http://localhost:8081/actuator/health 2>/dev/null; do echo "Retrying..."; sleep 2; done'
+        echo "Backend is ready!"
 
     - name: Install Frontend Dependencies
       working-directory: ./cinema-manager/frontend
@@ -82,9 +84,9 @@ jobs:
 
     - name: Run API Integration Tests
       run: |
-        curl -X POST http://localhost:8081/api/auth/register \
+        curl -X POST http://localhost:8081/api/auth/signup \
           -H "Content-Type: application/json" \
-          -d '{"email":"test@test.com","password":"Test123!","firstName":"Test","lastName":"User"}'
+          -d '{"username":"testuser","email":"test@test.com","password":"Test123!","phone":"1234567890"}'
         
         curl -X GET http://localhost:8081/api/movies \
           -H "Content-Type: application/json"
