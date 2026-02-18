@@ -1,0 +1,1756 @@
+openapi: 3.0.0
+info:
+  title: Cinema Management System API
+  description: Comprehensive REST API for Cinema Management System with movie bookings, food/merchandise ordering, and payment processing
+  version: 1.0.0
+  contact:
+    name: Cinema Management System Team
+    email: admin@cinema.com
+
+servers:
+  - url: https://api.cinema-system.com
+    description: Production server
+  - url: http://localhost:8081
+    description: Development server
+
+tags:
+  - name: Authentication
+    description: User and admin authentication endpoints
+  - name: Movies
+    description: Movie management and browsing
+  - name: Showtimes
+    description: Movie showtime management
+  - name: Bookings
+    description: Ticket booking operations
+  - name: Food
+    description: Food and beverage management
+  - name: Merchandise
+    description: Merchandise management
+  - name: Cart
+    description: Shopping cart operations
+  - name: Payments
+    description: Payment processing with Stripe
+  - name: Users
+    description: User profile management
+  - name: Seats
+    description: Seat management
+  - name: Contacts
+    description: Contact form submissions
+  - name: System Config
+    description: System configuration management
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT authentication token
+
+  schemas:
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+
+    SignupRequest:
+      type: object
+      required:
+        - username
+        - email
+        - password
+        - phone
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+        phone:
+          type: string
+
+    JwtResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        id:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+        loyaltyPoints:
+          type: integer
+
+    MessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+
+    Movie:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        genre:
+          type: array
+          items:
+            type: string
+        duration:
+          type: integer
+        rating:
+          type: string
+        releaseDate:
+          type: string
+          format: date
+        director:
+          type: string
+        cast:
+          type: array
+          items:
+            type: string
+        posterUrl:
+          type: string
+        trailerUrl:
+          type: string
+        status:
+          type: string
+          enum: [NOW_SHOWING, COMING_SOON]
+        featured:
+          type: boolean
+        views:
+          type: integer
+        categoryId:
+          type: string
+
+    Showtime:
+      type: object
+      properties:
+        id:
+          type: string
+        movieId:
+          type: string
+        movieTitle:
+          type: string
+        showDate:
+          type: string
+          format: date
+        showTime:
+          type: string
+        endTime:
+          type: string
+        screen:
+          type: string
+        price:
+          type: number
+          format: double
+        availableSeats:
+          type: integer
+        totalSeats:
+          type: integer
+
+    Booking:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        showtimeId:
+          type: string
+        seats:
+          type: array
+          items:
+            type: string
+        totalAmount:
+          type: number
+          format: double
+        bookingCode:
+          type: string
+        qrCode:
+          type: string
+        status:
+          type: string
+          enum: [CONFIRMED, CANCELLED, COMPLETED]
+        createdAt:
+          type: string
+          format: date-time
+
+    Food:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        price:
+          type: number
+          format: double
+        imageUrl:
+          type: string
+        available:
+          type: boolean
+        isCombo:
+          type: boolean
+
+    Merchandise:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        price:
+          type: number
+          format: double
+        imageUrl:
+          type: string
+        stock:
+          type: integer
+        available:
+          type: boolean
+        isBundle:
+          type: boolean
+
+    Cart:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartItem'
+        totalAmount:
+          type: number
+          format: double
+        updatedAt:
+          type: string
+          format: date-time
+
+    CartItem:
+      type: object
+      properties:
+        merchandiseId:
+          type: string
+        quantity:
+          type: integer
+        price:
+          type: number
+          format: double
+
+    Payment:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        bookingId:
+          type: string
+        amount:
+          type: number
+          format: double
+        paymentMethod:
+          type: string
+        status:
+          type: string
+          enum: [PENDING, COMPLETED, FAILED]
+        stripePaymentIntentId:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        role:
+          type: string
+        loyaltyPoints:
+          type: integer
+
+    Seat:
+      type: object
+      properties:
+        id:
+          type: string
+        showtimeId:
+          type: string
+        seatNumber:
+          type: string
+        row:
+          type: string
+        status:
+          type: string
+          enum: [AVAILABLE, BOOKED, RESERVED]
+
+    Contact:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        subject:
+          type: string
+        message:
+          type: string
+        status:
+          type: string
+          enum: [NEW, IN_PROGRESS, RESOLVED]
+        createdAt:
+          type: string
+          format: date-time
+
+    SystemConfig:
+      type: object
+      properties:
+        id:
+          type: string
+        key:
+          type: string
+        value:
+          type: string
+        description:
+          type: string
+
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+        status:
+          type: integer
+
+paths:
+  # Authentication Endpoints
+  /api/auth/signup:
+    post:
+      tags:
+        - Authentication
+      summary: Register new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignupRequest'
+      responses:
+        '200':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '400':
+          description: Email already exists
+
+  /api/auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: User login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JwtResponse'
+        '401':
+          description: Invalid credentials
+
+  /api/auth/admin/signup:
+    post:
+      tags:
+        - Authentication
+      summary: Register new admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignupRequest'
+      responses:
+        '200':
+          description: Admin registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+
+  /api/auth/admin/login:
+    post:
+      tags:
+        - Authentication
+      summary: Admin login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JwtResponse'
+        '403':
+          description: Access denied
+
+  # Movie Endpoints
+  /api/movies:
+    get:
+      tags:
+        - Movies
+      summary: Get all movies
+      responses:
+        '200':
+          description: List of movies
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Movie'
+    post:
+      tags:
+        - Movies
+      summary: Create new movie (Admin only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Movie'
+      responses:
+        '200':
+          description: Movie created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Movie'
+
+  /api/movies/{id}:
+    get:
+      tags:
+        - Movies
+      summary: Get movie by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Movie details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Movie'
+        '404':
+          description: Movie not found
+    put:
+      tags:
+        - Movies
+      summary: Update movie (Admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Movie'
+      responses:
+        '200':
+          description: Movie updated successfully
+    delete:
+      tags:
+        - Movies
+      summary: Delete movie (Admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Movie deleted successfully
+
+  /api/movies/now-showing:
+    get:
+      tags:
+        - Movies
+      summary: Get now showing movies
+      responses:
+        '200':
+          description: List of now showing movies
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Movie'
+
+  /api/movies/coming-soon:
+    get:
+      tags:
+        - Movies
+      summary: Get coming soon movies
+      responses:
+        '200':
+          description: List of coming soon movies
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Movie'
+
+  /api/movies/featured:
+    get:
+      tags:
+        - Movies
+      summary: Get featured movies
+      responses:
+        '200':
+          description: List of featured movies
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Movie'
+
+  /api/movies/popular:
+    get:
+      tags:
+        - Movies
+      summary: Get most popular movies
+      responses:
+        '200':
+          description: List of popular movies
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Movie'
+
+  /api/movies/most-viewed:
+    get:
+      tags:
+        - Movies
+      summary: Get most viewed movies
+      responses:
+        '200':
+          description: List of most viewed movies
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Movie'
+
+  /api/movies/search:
+    get:
+      tags:
+        - Movies
+      summary: Search movies
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Movie'
+
+  /api/movies/category/{categoryId}:
+    get:
+      tags:
+        - Movies
+      summary: Get movies by category
+      parameters:
+        - name: categoryId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Movies in category
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Movie'
+
+  /api/movies/genre/{genre}:
+    get:
+      tags:
+        - Movies
+      summary: Get movies by genre
+      parameters:
+        - name: genre
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Movies by genre
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Movie'
+
+  # Showtime Endpoints
+  /api/showtimes:
+    get:
+      tags:
+        - Showtimes
+      summary: Get all showtimes
+      responses:
+        '200':
+          description: List of showtimes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Showtime'
+    post:
+      tags:
+        - Showtimes
+      summary: Create showtime (Admin only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Showtime'
+      responses:
+        '200':
+          description: Showtime created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Showtime'
+
+  /api/showtimes/{id}:
+    get:
+      tags:
+        - Showtimes
+      summary: Get showtime by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Showtime details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Showtime'
+    put:
+      tags:
+        - Showtimes
+      summary: Update showtime (Admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Showtime'
+      responses:
+        '200':
+          description: Showtime updated
+    delete:
+      tags:
+        - Showtimes
+      summary: Delete showtime (Admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Showtime deleted
+
+  /api/showtimes/movie/{movieId}:
+    get:
+      tags:
+        - Showtimes
+      summary: Get showtimes by movie ID
+      parameters:
+        - name: movieId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Movie showtimes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Showtime'
+
+  /api/showtimes/upcoming:
+    get:
+      tags:
+        - Showtimes
+      summary: Get upcoming showtimes
+      responses:
+        '200':
+          description: Upcoming showtimes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Showtime'
+
+  /api/showtimes/available:
+    get:
+      tags:
+        - Showtimes
+      summary: Get available showtimes
+      responses:
+        '200':
+          description: Available showtimes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Showtime'
+
+  # Booking Endpoints
+  /api/bookings:
+    get:
+      tags:
+        - Bookings
+      summary: Get all bookings (Admin only)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of all bookings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Booking'
+    post:
+      tags:
+        - Bookings
+      summary: Create booking
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Booking'
+      responses:
+        '200':
+          description: Booking created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+
+  /api/bookings/{id}:
+    get:
+      tags:
+        - Bookings
+      summary: Get booking by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Booking details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+    delete:
+      tags:
+        - Bookings
+      summary: Cancel booking
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Booking cancelled
+
+  /api/bookings/user/{userId}:
+    get:
+      tags:
+        - Bookings
+      summary: Get user bookings
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User's bookings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Booking'
+
+  /api/bookings/code/{bookingCode}:
+    get:
+      tags:
+        - Bookings
+      summary: Get booking by code
+      parameters:
+        - name: bookingCode
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Booking details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+
+  # Food Endpoints
+  /api/food:
+    get:
+      tags:
+        - Food
+      summary: Get active food items
+      responses:
+        '200':
+          description: List of food items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Food'
+    post:
+      tags:
+        - Food
+      summary: Create food item (Admin only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Food'
+      responses:
+        '200':
+          description: Food item created
+
+  /api/food/all:
+    get:
+      tags:
+        - Food
+      summary: Get all food items (Admin only)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: All food items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Food'
+
+  /api/food/{id}:
+    get:
+      tags:
+        - Food
+      summary: Get food item by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Food item details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Food'
+    put:
+      tags:
+        - Food
+      summary: Update food item (Admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Food'
+      responses:
+        '200':
+          description: Food item updated
+    delete:
+      tags:
+        - Food
+      summary: Delete food item (Admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Food item deleted
+
+  /api/food/category/{category}:
+    get:
+      tags:
+        - Food
+      summary: Get food items by category
+      parameters:
+        - name: category
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Food items in category
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Food'
+
+  /api/food/combos:
+    get:
+      tags:
+        - Food
+      summary: Get combo food items
+      responses:
+        '200':
+          description: Combo food items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Food'
+
+  # Merchandise Endpoints
+  /api/merchandise:
+    get:
+      tags:
+        - Merchandise
+      summary: Get active merchandise
+      responses:
+        '200':
+          description: List of merchandise
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Merchandise'
+    post:
+      tags:
+        - Merchandise
+      summary: Create merchandise (Admin only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Merchandise'
+      responses:
+        '200':
+          description: Merchandise created
+
+  /api/merchandise/all:
+    get:
+      tags:
+        - Merchandise
+      summary: Get all merchandise (Admin only)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: All merchandise
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Merchandise'
+
+  /api/merchandise/{id}:
+    get:
+      tags:
+        - Merchandise
+      summary: Get merchandise by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Merchandise details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Merchandise'
+    put:
+      tags:
+        - Merchandise
+      summary: Update merchandise (Admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Merchandise'
+      responses:
+        '200':
+          description: Merchandise updated
+    delete:
+      tags:
+        - Merchandise
+      summary: Delete merchandise (Admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Merchandise deleted
+
+  /api/merchandise/category/{category}:
+    get:
+      tags:
+        - Merchandise
+      summary: Get merchandise by category
+      parameters:
+        - name: category
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Merchandise in category
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Merchandise'
+
+  /api/merchandise/bundles:
+    get:
+      tags:
+        - Merchandise
+      summary: Get bundle merchandise
+      responses:
+        '200':
+          description: Bundle merchandise
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Merchandise'
+
+  /api/merchandise/{id}/stock:
+    patch:
+      tags:
+        - Merchandise
+      summary: Update merchandise stock (Admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: quantity
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Stock updated
+
+  # Cart Endpoints
+  /api/cart:
+    get:
+      tags:
+        - Cart
+      summary: Get user cart
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Cart details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+
+  /api/cart/add:
+    post:
+      tags:
+        - Cart
+      summary: Add item to cart
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                merchandiseId:
+                  type: string
+                quantity:
+                  type: integer
+      responses:
+        '200':
+          description: Item added to cart
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+
+  /api/cart/update:
+    put:
+      tags:
+        - Cart
+      summary: Update cart item quantity
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                merchandiseId:
+                  type: string
+                quantity:
+                  type: integer
+      responses:
+        '200':
+          description: Cart updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+
+  /api/cart/remove/{merchandiseId}:
+    delete:
+      tags:
+        - Cart
+      summary: Remove item from cart
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: merchandiseId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Item removed from cart
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+
+  /api/cart/clear:
+    delete:
+      tags:
+        - Cart
+      summary: Clear cart
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Cart cleared
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+
+  /api/cart/checkout:
+    post:
+      tags:
+        - Cart
+      summary: Checkout cart
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Checkout successful
+
+  # Payment Endpoints
+  /api/payments/config:
+    get:
+      tags:
+        - Payments
+      summary: Get Stripe configuration
+      responses:
+        '200':
+          description: Stripe publishable key
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  publishableKey:
+                    type: string
+
+  /api/payments/create-payment-intent:
+    post:
+      tags:
+        - Payments
+      summary: Create Stripe payment intent
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: number
+                bookingId:
+                  type: string
+      responses:
+        '200':
+          description: Payment intent created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  clientSecret:
+                    type: string
+
+  /api/payments/create:
+    post:
+      tags:
+        - Payments
+      summary: Create payment record
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Payment'
+      responses:
+        '200':
+          description: Payment created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+
+  /api/payments/user:
+    get:
+      tags:
+        - Payments
+      summary: Get user payments
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User payments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Payment'
+
+  /api/payments:
+    get:
+      tags:
+        - Payments
+      summary: Get all payments (Admin only)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: All payments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Payment'
+
+  # User Endpoints
+  /api/users/profile:
+    get:
+      tags:
+        - Users
+      summary: Get user profile
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    put:
+      tags:
+        - Users
+      summary: Update user profile
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                phone:
+                  type: string
+      responses:
+        '200':
+          description: Profile updated
+
+  /api/users/{id}:
+    get:
+      tags:
+        - Users
+      summary: Get user by ID (Admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /api/users:
+    get:
+      tags:
+        - Users
+      summary: Get all users (Admin only)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+
+  # Seat Endpoints
+  /api/seats/showtime/{showtimeId}:
+    get:
+      tags:
+        - Seats
+      summary: Get seats by showtime
+      parameters:
+        - name: showtimeId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Showtime seats
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Seat'
+
+  /api/seats/{id}:
+    get:
+      tags:
+        - Seats
+      summary: Get seat by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Seat details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Seat'
+
+  # Contact Endpoints
+  /api/contacts:
+    get:
+      tags:
+        - Contacts
+      summary: Get all contacts (Admin only)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of contacts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Contact'
+    post:
+      tags:
+        - Contacts
+      summary: Submit contact form
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Contact'
+      responses:
+        '200':
+          description: Contact submitted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contact'
+
+  /api/contacts/status/{status}:
+    get:
+      tags:
+        - Contacts
+      summary: Get contacts by status
+      parameters:
+        - name: status
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Contacts by status
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Contact'
+
+  /api/contacts/{id}/status:
+    put:
+      tags:
+        - Contacts
+      summary: Update contact status
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: status
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Status updated
+
+  /api/contacts/{id}:
+    delete:
+      tags:
+        - Contacts
+      summary: Delete contact
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Contact deleted
+
+  # System Config Endpoints
+  /api/system-config:
+    get:
+      tags:
+        - System Config
+      summary: Get all configurations (Admin only)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of configurations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SystemConfig'
+    post:
+      tags:
+        - System Config
+      summary: Create configuration (Admin only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SystemConfig'
+      responses:
+        '200':
+          description: Configuration created
+
+  /api/system-config/key/{key}:
+    get:
+      tags:
+        - System Config
+      summary: Get configuration by key
+      parameters:
+        - name: key
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Configuration value
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemConfig'
+
+  /api/system-config/{id}:
+    put:
+      tags:
+        - System Config
+      summary: Update configuration (Admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SystemConfig'
+      responses:
+        '200':
+          description: Configuration updated
+    delete:
+      tags:
+        - System Config
+      summary: Delete configuration (Admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Configuration deleted
+
+  /api/system-config/initialize:
+    post:
+      tags:
+        - System Config
+      summary: Initialize default configurations (Admin only)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Defaults initialized
