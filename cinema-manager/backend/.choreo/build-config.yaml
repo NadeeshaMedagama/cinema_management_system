@@ -1,0 +1,9 @@
+# Choreo Build Configuration
+# This file specifies to use Docker instead of buildpacks
+
+version: 0.1
+
+# Force Docker build
+buildPack:
+  type: dockerfile
+  dockerfile: Dockerfile
