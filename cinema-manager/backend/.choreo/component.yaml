@@ -2,11 +2,12 @@
 # Schema Version 1.2
 schemaVersion: "1.2"
 
-# Build configuration - MUST use Dockerfile to avoid buildpack Java version issues
-buildConfig:
-  type: docker
-  dockerfile: Dockerfile
-  context: .
+# Build configuration - Force Dockerfile usage
+build:
+  preset: dockerfile
+  dockerfile:
+    path: Dockerfile
+    context: .
 
 # Incoming connection details for the component
 endpoints:

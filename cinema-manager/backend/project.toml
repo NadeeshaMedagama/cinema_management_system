@@ -1,14 +1,19 @@
 # Project Configuration for Cloud Native Buildpacks
-# This file instructs the build system to skip buildpacks and use Dockerfile
+# This file instructs the build system to use specific Java version
 
 [_]
 schema-version = "0.2"
 
-# Exclude from buildpack detection - force Dockerfile usage
+# Set Java version with semantic versioning
 [[io.buildpacks.build.env]]
 name = "BP_JVM_VERSION"
-value = "17"
+value = "17.*"
 
 [[io.buildpacks.build.env]]
 name = "BP_MAVEN_BUILD_ARGUMENTS"
 value = "-DskipTests package"
+
+[[io.buildpacks.build.env]]
+name = "GOOGLE_RUNTIME_VERSION"
+value = "17"
+
