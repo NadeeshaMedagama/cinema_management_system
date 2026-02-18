@@ -1,5 +1,6 @@
 # Multi-stage build for Spring Boot Backend
-FROM maven:3.9-eclipse-temurin-17 AS build
+# Using Java 21 images for multi-architecture support (linux/amd64 and linux/arm64)
+FROM maven:3.9-eclipse-temurin-21 AS build
 
 WORKDIR /app
 
@@ -7,14 +8,14 @@ WORKDIR /app
 COPY pom.xml .
 COPY .mvn .mvn
 COPY mvnw .
-RUN ./mvnw dependency:go-offline
+RUN chmod +x mvnw && ./mvnw dependency:go-offline -B
 
 # Copy source code and build
 COPY src ./src
-RUN ./mvnw clean package -DskipTests
+RUN ./mvnw clean package -DskipTests -B
 
-# Runtime stage - using non-alpine image for multi-arch support
-FROM eclipse-temurin:17-jre
+# Runtime stage - using Java 21 JRE for multi-arch support
+FROM eclipse-temurin:21-jre
 
 WORKDIR /app
 
