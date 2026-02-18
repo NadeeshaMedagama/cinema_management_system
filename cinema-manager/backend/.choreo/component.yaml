@@ -16,147 +16,59 @@ endpoints:
 
 # Runtime configurations
 configurations:
-  # Environment variables
+  # Environment variables - All values should be configured in Choreo Console
   env:
     # MongoDB Configuration
     - name: MONGODB_URI
-      valueFrom:
-        configForm:
-          displayName: MongoDB Connection URI
-          description: MongoDB Atlas connection string
-          required: true
-          type: string
+      value: "${MONGODB_URI}"
 
     - name: MONGODB_DATABASE
-      valueFrom:
-        configForm:
-          displayName: MongoDB Database Name
-          description: Name of the MongoDB database
-          required: true
-          type: string
-          default: cinema_db
+      value: cinema_db
 
     # Server Configuration
     - name: SERVER_PORT
-      valueFrom:
-        configForm:
-          displayName: Server Port
-          description: Port the server runs on
-          required: false
-          type: string
-          default: "8081"
+      value: "8081"
 
     # JWT Configuration
     - name: JWT_SECRET
-      valueFrom:
-        configForm:
-          displayName: JWT Secret Key
-          description: Secret key for JWT token signing (min 32 characters)
-          required: true
-          type: string
+      value: "${JWT_SECRET}"
 
     - name: JWT_EXPIRATION
-      valueFrom:
-        configForm:
-          displayName: JWT Token Expiration
-          description: JWT token expiration time in milliseconds
-          required: false
-          type: string
-          default: "86400000"
+      value: "86400000"
 
     # CORS Configuration
     - name: CORS_ALLOWED_ORIGINS
-      valueFrom:
-        configForm:
-          displayName: CORS Allowed Origins
-          description: Comma-separated list of allowed origins
-          required: true
-          type: string
-          default: http://localhost:3000
+      value: "${CORS_ALLOWED_ORIGINS}"
 
-    # Mail Configuration (Optional)
+    # Mail Configuration
     - name: MAIL_HOST
-      valueFrom:
-        configForm:
-          displayName: Mail Server Host
-          description: SMTP mail server hostname
-          required: false
-          type: string
-          default: smtp.gmail.com
+      value: smtp.gmail.com
 
     - name: MAIL_PORT
-      valueFrom:
-        configForm:
-          displayName: Mail Server Port
-          description: SMTP mail server port
-          required: false
-          type: string
-          default: "587"
+      value: "587"
 
     - name: MAIL_USERNAME
-      valueFrom:
-        configForm:
-          displayName: Mail Username
-          description: SMTP username/email
-          required: false
-          type: string
+      value: "${MAIL_USERNAME}"
 
     - name: MAIL_PASSWORD
-      valueFrom:
-        configForm:
-          displayName: Mail Password
-          description: SMTP password or app password
-          required: false
-          type: string
+      value: "${MAIL_PASSWORD}"
 
-    # Stripe Payment Configuration (Optional)
+    # Stripe Payment Configuration
     - name: STRIPE_API_KEY
-      valueFrom:
-        configForm:
-          displayName: Stripe API Key
-          description: Stripe secret API key
-          required: false
-          type: string
+      value: "${STRIPE_API_KEY}"
 
     - name: STRIPE_PUBLIC_KEY
-      valueFrom:
-        configForm:
-          displayName: Stripe Public Key
-          description: Stripe publishable key
-          required: false
-          type: string
+      value: "${STRIPE_PUBLIC_KEY}"
 
     - name: STRIPE_WEBHOOK_SECRET
-      valueFrom:
-        configForm:
-          displayName: Stripe Webhook Secret
-          description: Stripe webhook signing secret
-          required: false
-          type: string
+      value: "${STRIPE_WEBHOOK_SECRET}"
 
     # Application Configuration
     - name: ADMIN_EMAIL
-      valueFrom:
-        configForm:
-          displayName: Admin Email
-          description: Default admin email address
-          required: false
-          type: string
-          default: admin@cinema.com
+      value: admin@cinema.com
 
     - name: ADMIN_PASSWORD
-      valueFrom:
-        configForm:
-          displayName: Admin Password
-          description: Default admin password
-          required: false
-          type: string
+      value: "${ADMIN_PASSWORD}"
 
     - name: USER_WELCOME_BONUS
-      valueFrom:
-        configForm:
-          displayName: Welcome Bonus Points
-          description: Loyalty points given to new users
-          required: false
-          type: string
-          default: "100"
+      value: "100"
