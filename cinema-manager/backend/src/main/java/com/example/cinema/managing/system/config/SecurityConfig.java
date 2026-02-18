@@ -44,16 +44,20 @@ public class SecurityConfig {
                         // 1. Allow Pre-flight OPTIONS requests (Critical for CORS)
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         
-                        // 2. Auth and Guest access
+                        // 2. Actuator Health Endpoints (for monitoring)
+                        .requestMatchers("/actuator/health/**").permitAll()
+                        .requestMatchers("/actuator/info").permitAll()
+
+                        // 3. Auth and Guest access
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/guest/**").permitAll()
                         
-                        // 3. Movie and Showtime access
+                        // 4. Movie and Showtime access
                         .requestMatchers("/api/movies/**").permitAll()
                         .requestMatchers("/api/categories/**").permitAll()
                         .requestMatchers("/api/showtimes/**").permitAll()
                         
-                        // 4. Food and Merchandise access
+                        // 5. Food and Merchandise access
                         .requestMatchers("/api/merchandise/public/**").permitAll()
                         .requestMatchers("/api/food/public/**").permitAll()
                         .requestMatchers("/api/food", "/api/food/category/**", "/api/food/combos").permitAll()
@@ -61,13 +65,13 @@ public class SecurityConfig {
                         .requestMatchers("/api/food/**").authenticated()
                         .requestMatchers("/api/merchandise/**").authenticated()
                         
-                        // 5. Contact Form Feature
+                        // 6. Contact Form Feature
                         // Public can only submit (POST)
                         .requestMatchers(HttpMethod.POST, "/api/contacts").permitAll() 
                         // Admin-only for managing/deleting contacts
                         .requestMatchers("/api/contacts/**").hasRole("ADMIN") 
                         
-                        // 6. Admin and Fallback
+                        // 7. Admin and Fallback
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
