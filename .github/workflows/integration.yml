@@ -62,7 +62,7 @@ jobs:
 
     - name: Install Frontend Dependencies
       working-directory: ./cinema-manager/frontend
-      run: npm ci
+      run: npm install --legacy-peer-deps --no-audit
 
     - name: Start Frontend
       working-directory: ./cinema-manager/frontend
