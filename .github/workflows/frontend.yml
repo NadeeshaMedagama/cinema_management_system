@@ -24,8 +24,14 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '18'
-        cache: 'npm'
-        cache-dependency-path: cinema-manager/frontend/package-lock.json
+
+    - name: Cache npm dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('cinema-manager/frontend/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
 
     - name: Install dependencies
       working-directory: ./cinema-manager/frontend
@@ -63,8 +69,14 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '18'
-        cache: 'npm'
-        cache-dependency-path: cinema-manager/frontend/package-lock.json
+
+    - name: Cache npm dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('cinema-manager/frontend/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
 
     - name: Install dependencies
       working-directory: ./cinema-manager/frontend
@@ -151,7 +163,7 @@ jobs:
     - name: Deploy to Netlify
       uses: nwtgck/actions-netlify@v3.0
       with:
-        publish-dir: './frontend/build'
+        publish-dir: './cinema-manager/frontend/build'
         production-branch: main
         github-token: ${{ secrets.GITHUB_TOKEN }}
         deploy-message: "Deploy from GitHub Actions"
