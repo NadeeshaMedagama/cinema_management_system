@@ -20,7 +20,7 @@ public class PaymentController {
     @Autowired
     private PaymentService paymentService;
 
-    @Value("${stripe.public.key}")
+    @Value("${stripe.public.key:}")
     private String stripePublicKey;
 
     @GetMapping("/config")
