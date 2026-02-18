@@ -45,20 +45,62 @@ jobs:
 
     - name: Start Backend
       working-directory: ./cinema-manager/backend
-      env:
-        MONGODB_URI: mongodb://test:test@localhost:27017/cinema_test?authSource=admin
-        JWT_SECRET: test-secret-key-for-integration-testing-only
-        SERVER_PORT: 8081
       run: |
-        ./mvnw clean install -DskipTests
-        ./mvnw spring-boot:run &
+        # Build the JAR
+        ./mvnw clean package -DskipTests
+        
+        # Start the JAR with all required environment variables
+        export MONGODB_URI="mongodb://test:test@localhost:27017/cinema_test?authSource=admin"
+        export JWT_SECRET="test-secret-key-for-integration-testing-only-minimum-32-characters-long"
+        export SERVER_PORT=8081
+        export CORS_ALLOWED_ORIGINS="http://localhost:3000"
+        export SPRING_PROFILES_ACTIVE=test
+        export MAIL_HOST=smtp.gmail.com
+        export MAIL_PORT=587
+        export ADMIN_EMAIL=admin@test.com
+        export ADMIN_PASSWORD=admin123
+        export USER_WELCOME_BONUS=100
+        
+        # Run JAR in background with nohup
+        nohup java -jar target/*.jar > backend.log 2>&1 &
         echo $! > backend.pid
+        
+        # Give it some time to start
+        sleep 15
+        
+        # Show initial logs
+        echo "=== Initial Backend Logs ==="
+        cat backend.log | head -50 || true
 
     - name: Wait for Backend
+      working-directory: ./cinema-manager/backend
       run: |
         echo "Waiting for backend to start..."
-        timeout 180 bash -c 'until curl -f http://localhost:8081/actuator/health 2>/dev/null; do echo "Retrying..."; sleep 2; done'
-        echo "Backend is ready!"
+        for i in {1..90}; do
+          if curl -s http://localhost:8081/actuator/health > /dev/null 2>&1; then
+            echo "Backend is ready!"
+            curl -s http://localhost:8081/actuator/health
+            exit 0
+          fi
+          echo "Attempt $i/90: Backend not ready yet, waiting..."
+          
+          # Check if process is still running
+          if [ -f backend.pid ]; then
+            PID=$(cat backend.pid)
+            if ! ps -p $PID > /dev/null 2>&1; then
+              echo "ERROR: Backend process has died!"
+              echo "=== Backend Logs ==="
+              cat backend.log || true
+              exit 1
+            fi
+          fi
+          
+          sleep 2
+        done
+        echo "Backend failed to start within timeout"
+        echo "=== Backend Logs ==="
+        cat backend.log || true
+        exit 1
 
     - name: Install Frontend Dependencies
       working-directory: ./cinema-manager/frontend
