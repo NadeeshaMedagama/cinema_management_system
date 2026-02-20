@@ -97,7 +97,7 @@ jobs:
         continue-on-error: true
 
       - name: Upload backend artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: backend-jar
           path: cinema-manager/backend/target/*.jar
@@ -139,7 +139,7 @@ jobs:
         run: tar -czvf frontend-build.tar.gz build/
 
       - name: Upload frontend artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: frontend-build
           path: cinema-manager/frontend/frontend-build.tar.gz
