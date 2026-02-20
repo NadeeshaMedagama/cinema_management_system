@@ -1,6 +1,6 @@
 # Multi-stage build for Spring Boot Backend
 # Using Java 21 images for multi-architecture support (linux/amd64 and linux/arm64)
-FROM maven:3.9-eclipse-temurin-21 AS build
+FROM maven:3-eclipse-temurin-25 AS build
 
 WORKDIR /app
 
