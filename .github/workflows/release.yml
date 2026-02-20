@@ -164,7 +164,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and push Backend Docker image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: ./cinema-manager/backend
           file: ./cinema-manager/backend/Dockerfile
@@ -177,7 +177,7 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Build and push Frontend Docker image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: ./cinema-manager/frontend
           file: ./cinema-manager/frontend/Dockerfile
