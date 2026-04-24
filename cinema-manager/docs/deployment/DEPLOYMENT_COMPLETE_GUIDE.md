@@ -41,7 +41,7 @@ This guide will help you deploy the Cinema Management System with:
 3. **Set Environment Variables in Railway**
    ```properties
    SERVER_PORT=8081
-   MONGODB_URI=mongodb+srv://viduranec21018_db_user:1PT66Tbaga2DGbxL@cluster0.hrph9cw.mongodb.net/?retryWrites=true&w=majority&appName=cinema-managing-system
+   MONGODB_URI=mongodb+srv://.......
    MONGODB_DATABASE=cinema_db
    JWT_SECRET=mySecretKeyForJWTTokenGenerationThatIsAtLeast256BitsLongForHS256Algorithm
    JWT_EXPIRATION=86400000
