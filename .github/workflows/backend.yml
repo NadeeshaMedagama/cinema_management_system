@@ -78,7 +78,7 @@ jobs:
       run: ./mvnw clean package -DskipTests
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: backend-jar
         path: cinema-manager/backend/target/*.jar
