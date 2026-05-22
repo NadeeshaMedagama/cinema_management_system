@@ -210,7 +210,7 @@ jobs:
       continue-on-error: true
 
     - name: Create GitHub Release Comment
-      uses: actions/github-script@v8
+      uses: actions/github-script@v9
       if: github.event_name == 'release'
       with:
         script: |
