@@ -5,7 +5,7 @@
   "dependencies": {
     "@stripe/react-stripe-js": "^6.8.2",
     "@stripe/stripe-js": "^9.14.0",
-    "axios": "^1.18.1",
+    "axios": "^1.19.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^7.18.2",
